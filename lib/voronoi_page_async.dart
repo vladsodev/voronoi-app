@@ -4,6 +4,7 @@ import 'package:voronoi/textfield.dart';
 import 'package:voronoi/researches.dart';
 import 'package:image/image.dart' as img;
 
+
 Uint8List createDiagram(List<dynamic> params) {
     int width = params[0];
     int height = params[1];
@@ -13,7 +14,7 @@ Uint8List createDiagram(List<dynamic> params) {
     }
     // Creating new image
     img.Image diagram = img.Image(width: width, height: height);
-    print('image created');
+    debugPrint('image created');
     List<DrawPixels> baseStationList = generatePixels(basedStation, width, height);
     for (var pixel in baseStationList) {
       pixel.color = generateRandomColor();
@@ -76,19 +77,22 @@ class _VoronoiPageAsyncState extends State<VoronoiPageAsync> {
         child: Center(
           child: Column(
             children: [
-              FutureBuilder(
-                future: diagramImage,
-                builder: (context, AsyncSnapshot<Uint8List> snapshot) {
-                  if (snapshot.hasData == false) {
-                    return const Center( child: Icon(Icons.image, size: 40,));
-                  }
-                  if (snapshot.connectionState != ConnectionState.done) {
-                    print('connection state waiting');
-                    return const CircularProgressIndicator();
-                  }
-                  print('begin');
-                  return Image.memory(snapshot.data!);
-                },
+              SizedBox(
+                height: 300,
+                child: FutureBuilder(
+                  future: diagramImage,
+                  builder: (context, AsyncSnapshot<Uint8List> snapshot) {
+                    if (snapshot.hasData == false) {
+                      return const Center( child: Icon(Icons.image, size: 40,));
+                    }
+                    if (snapshot.connectionState != ConnectionState.done) {
+                      debugPrint('connection state waiting');
+                      return  const Center(child: CircularProgressIndicator());
+                    }
+                    debugPrint('begin');
+                    return Image.memory(snapshot.data!);
+                  },
+                ),
               ),
               MyTextField(
                 hintText: 'Enter width', 
