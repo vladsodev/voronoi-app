@@ -76,22 +76,19 @@ class _VoronoiPageAsyncState extends State<VoronoiPageAsync> {
         child: Center(
           child: Column(
             children: [
-              SizedBox(
-                height: 300,
-                child: FutureBuilder(
-                  future: diagramImage,
-                  builder: (context, AsyncSnapshot<Uint8List> snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      print('connection state waiting');
-                      return const CircularProgressIndicator();
-                    }
-                    if (snapshot.hasData == false) {
-                      return const Icon(Icons.image, size: 40,);
-                    }
-                    print('begin');
-                    return Image.memory(snapshot.data!);
-                  },
-                ),
+              FutureBuilder(
+                future: diagramImage,
+                builder: (context, AsyncSnapshot<Uint8List> snapshot) {
+                  if (snapshot.hasData == false) {
+                    return const Center( child: Icon(Icons.image, size: 40,));
+                  }
+                  if (snapshot.connectionState != ConnectionState.done) {
+                    print('connection state waiting');
+                    return const CircularProgressIndicator();
+                  }
+                  print('begin');
+                  return Image.memory(snapshot.data!);
+                },
               ),
               MyTextField(
                 hintText: 'Enter width', 
@@ -108,6 +105,7 @@ class _VoronoiPageAsyncState extends State<VoronoiPageAsync> {
               ElevatedButton(
                 onPressed: () {
                   setState(() {
+                    diagramImage = null;
                     width = int.tryParse(textEditingControllerWidth.text) ?? 0;
                     height = int.tryParse(textEditingControllerHeight.text) ?? 0;
                     basedStation = int.tryParse(textEditingControllerStations.text) ?? 0;
